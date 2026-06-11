@@ -1,11 +1,11 @@
-# 1. బిల్డ్ స్టేజ్: మావెన్ సహాయంతో జార్ ఫైల్ తయారు చేయడం
-FROM maven:3.8.5-openjdk-17 AS build
+# 1. బిల్డ్ స్టేజ్: మావెన్ మరియు టెమురిన్ జావాతో బిల్డ్ చేయడం
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# 2. రన్ స్టేజ్: తయారైన జార్ ఫైల్ ని క్లౌడ్ లో రన్ చేయడం
-FROM openjdk:17-jdk-slim
+# 2. రన్ స్టేజ్: కేవలం రన్ టైమ్ ఎన్విరాన్మెంట్ (JRE) మాత్రమే వాడటం వల్ల సర్వర్ వేగంగా రన్ అవుతుంది
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8089
