@@ -1,11 +1,11 @@
-# 1. బిల్డ్ స్టేజ్: మావెన్ మరియు టెమురిన్ జావాతో బిల్డ్ చేయడం
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# 1. బిల్డ్ స్టేజ్: మావెన్ మరియు టెమురిన్ జావా 21తో బిల్డ్ చేయడం
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# 2. రన్ స్టేజ్: కేవలం రన్ టైమ్ ఎన్విరాన్మెంట్ (JRE) మాత్రమే వాడటం వల్ల సర్వర్ వేగంగా రన్ అవుతుంది
-FROM eclipse-temurin:17-jre
+# 2. రన్ స్టేజ్: జావా 21 రన్ టైమ్ ఎన్విరాన్మెంట్ (JRE 21)
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8089
