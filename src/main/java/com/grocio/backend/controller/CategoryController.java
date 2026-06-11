@@ -1,0 +1,49 @@
+package com.grocio.backend.controller;
+
+import com.grocio.backend.entity.Category;
+import com.grocio.backend.entity.Product;
+import com.grocio.backend.repository.CategoryRepository;
+import com.grocio.backend.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/categories")
+@CrossOrigin(origins = "*") // CORS ఎర్రర్ రాకుండా
+public class CategoryController {
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    // 🟢 1. కేవలం కేటగిరీల లిస్ట్ మాత్రమే తెచ్చుకోవడానికి
+    @GetMapping
+    public ResponseEntity<List<Category>> getAllCategories() {
+        return ResponseEntity.ok(categoryRepository.findAll());
+    }
+
+    // 🟢 2. ఒక కేటగిరీ (ఉదా: 1) మీద క్లిక్ చేస్తే, అందులోని ప్రొడక్ట్స్ తెచ్చే API
+    @GetMapping("/{categoryId}/products")
+    public ResponseEntity<Map<String, Object>> getProductsByCategory(@PathVariable Long categoryId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Product> products = productRepository.findByCategoryId(categoryId);
+            
+            response.put("success", true);
+            response.put("products", products);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Failed to load products for this category.");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+}
