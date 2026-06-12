@@ -37,8 +37,8 @@ public class SecurityConfig {
                                                                 "/api/addresses/**",
                                                                 "/api/orders/**",
                                                                 "/api/categories/**",
-                                                                "api/home/**",
-                                                                "api/cart/**",
+                                                                "/api/home/**",
+                                                                "/api/cart/**",
                                                                 "/ws/**")
                                                 .permitAll()
                                                 // మిగతా ఏ API (Update Profile, Add to Cart etc.) వాడాలన్నా కచ్చితంగా
