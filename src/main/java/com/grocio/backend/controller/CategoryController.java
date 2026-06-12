@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.grocio.backend.dto.CategoryResponse;
+import com.grocio.backend.dto.SubCategoryResponse;
 import com.grocio.backend.entity.Category;
 import com.grocio.backend.entity.Product;
 import com.grocio.backend.entity.SubCategory;
@@ -35,16 +37,45 @@ public class CategoryController {
 
     // 🟢 1. కేవలం కేటగిరీల లిస్ట్ మాత్రమే తెచ్చుకోవడానికి
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
-        return ResponseEntity.ok(categoryRepository.findAll());
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+        List<CategoryResponse> categories = categoryRepository.findAll()
+                .stream()
+                .map(category -> {
+                    CategoryResponse dto = new CategoryResponse();
+
+                    dto.setId(category.getId());
+                    dto.setName(category.getName());
+                    dto.setImageUrl(category.getImageUrl());
+
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/{categoryId}/subcategories")
-    public List<SubCategory> getSubCategories(
+    public ResponseEntity<List<SubCategoryResponse>> getSubCategories(
             @PathVariable Long categoryId) {
 
-        return subCategoryRepository
-                .findByCategory_IdOrderByDisplayOrderAsc(categoryId);
+        List<SubCategoryResponse> subCategories = subCategoryRepository
+                .findByCategory_IdOrderByDisplayOrderAsc(categoryId)
+                .stream()
+                .map(subCategory -> {
+
+                    SubCategoryResponse dto = new SubCategoryResponse();
+
+                    dto.setId(subCategory.getId());
+                    dto.setName(subCategory.getName());
+                    dto.setImageUrl(subCategory.getImageUrl());
+                    dto.setDisplayOrder(subCategory.getDisplayOrder());
+
+                    return dto;
+
+                })
+                .toList();
+
+        return ResponseEntity.ok(subCategories);
     }
 
     // 🟢 2. ఒక కేటగిరీ (ఉదా: 1) మీద క్లిక్ చేస్తే, అందులోని ప్రొడక్ట్స్ తెచ్చే API
