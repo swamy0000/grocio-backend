@@ -1,11 +1,14 @@
 package com.grocio.backend.controller;
 
 import com.grocio.backend.dto.ProductDetailsDTO;
+import com.grocio.backend.dto.ProductResponse;
 import com.grocio.backend.entity.Product;
 import com.grocio.backend.repository.ProductRepository;
 import com.grocio.backend.service.ProductService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +41,35 @@ public class ProductController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body("{\"error\": \"Product not found\"}");
         }
+    }
+
+    @GetMapping("/best-sellers")
+    public ResponseEntity<Map<String, Object>> getBestSellers() {
+
+        List<ProductResponse> products = productRepository
+                .findTop10ByIsActiveTrueOrderByProductIdDesc()
+                .stream()
+                .map(product -> {
+
+                    ProductResponse dto = new ProductResponse();
+
+                    dto.setProductId(product.getProductId());
+                    dto.setName(product.getName());
+                    dto.setPrice(product.getPrice());
+                    dto.setOldPrice(product.getOldPrice());
+                    dto.setUnit(product.getUnit());
+                    dto.setImageUrl(product.getImageUrl());
+                    dto.setBadge(product.getBadge());
+                    dto.setRating(product.getRating());
+
+                    return dto;
+
+                }).toList();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("products", products);
+
+        return ResponseEntity.ok(response);
     }
 }

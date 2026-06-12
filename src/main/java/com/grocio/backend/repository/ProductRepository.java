@@ -15,4 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Long productId);
 
     List<Product> findBySubCategory_IdAndIsActiveTrue(Long subCategoryId);
+
+    List<Product> findTop10ByIsActiveTrueOrderByProductIdDesc();
 }
