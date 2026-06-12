@@ -6,6 +6,9 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+
 @Data
 @Entity
 @Table(name = "categories")
@@ -22,11 +25,8 @@ public class Category {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @OneToMany(
-            mappedBy = "category",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("displayOrder ASC")
+    @JsonManagedReference
     private List<SubCategory> subCategories = new ArrayList<>();
 }

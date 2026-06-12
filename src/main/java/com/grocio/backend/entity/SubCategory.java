@@ -6,6 +6,9 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Data
 @Entity
 @Table(name = "sub_categories")
@@ -18,6 +21,7 @@ public class SubCategory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
+    @JsonBackReference
     private Category category;
 
     @Column(nullable = false)
@@ -32,10 +36,7 @@ public class SubCategory {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @OneToMany(
-            mappedBy = "subCategory",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "subCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Product> products = new ArrayList<>();
 }

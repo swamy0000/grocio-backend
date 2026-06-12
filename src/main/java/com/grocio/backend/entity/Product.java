@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Data
 @Entity
 @Table(name = "products")
@@ -17,6 +19,7 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_category_id", nullable = false)
+    @JsonBackReference
     private SubCategory subCategory;
 
     @Column(nullable = false)
