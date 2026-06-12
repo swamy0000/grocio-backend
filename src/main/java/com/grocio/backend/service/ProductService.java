@@ -23,7 +23,7 @@ public class ProductService {
 
         // 2. దానికి సంబంధించిన సజెషన్స్ (Related Products) తెచ్చుకోవడం
         List<Product> relatedProductsEntity = productRepository
-                .findTop5BySubCategoryIdAndProductIdNotAndIsActiveTrue(product.getSubCategoryId(), productId);
+                .findTop5BySubCategoryAndProductIdNotAndIsActiveTrue(product.getSubCategory(), productId);
 
         // 3. సజెషన్స్ ని DTO కి మార్చడం
         List<RelatedProductDTO> relatedProductDTOs = relatedProductsEntity.stream().map(rp -> {
@@ -51,7 +51,7 @@ public class ProductService {
         response.setShelfLife(product.getShelfLife());
         response.setCountryOfOrigin(product.getOrigin());
         response.setRating(product.getRating() != null ? product.getRating() : 4.5); // డీఫాల్ట్ రేటింగ్ 4.5
-        
+
         // 5. సజెషన్స్ ని యాడ్ చేసి పంపడం
         response.setRelatedProducts(relatedProductDTOs);
 

@@ -1,12 +1,14 @@
 package com.grocio.backend.dto;
 
+import java.math.BigDecimal;
+
 import lombok.Data;
 
 @Data
 public class CartItemResponseDTO {
     private Long id; // product_id
     private String name;
-    private Double price;
+    private BigDecimal price;
     private String qty; // unit (e.g. 1 kg)
     private String img; // imageUrl
     private Integer qty_count; // quantity selected

@@ -1,5 +1,7 @@
 package com.grocio.backend.entity;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -24,7 +26,7 @@ public class OrderItem {
 
     // 🟢 మీ ఇమేజ్ లో ఉన్నట్లుగా మ్యాప్ చేశాను
     @Column(name = "price_at_that_time", nullable = false)
-    private Double priceAtThatTime;
+    private BigDecimal priceAtThatTime;
 
     @Column(nullable = false)
     private Integer quantity;
