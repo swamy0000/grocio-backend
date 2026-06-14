@@ -1,7 +1,10 @@
 package com.grocio.backend.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.grocio.backend.dto.BannerResponse;
 import com.grocio.backend.entity.Banner;
+
 
 public class BannerMapper {
 
