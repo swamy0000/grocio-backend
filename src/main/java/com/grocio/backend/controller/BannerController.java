@@ -23,11 +23,7 @@ public class BannerController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> getBanners() {
 
-        List<BannerResponse> banners = bannerRepository
-                .findByIsActiveTrueAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityAsc(
-                        LocalDateTime.now(),
-                        LocalDateTime.now()
-                )
+        List<BannerResponse> banners = bannerRepository.findActiveBanners()
                 .stream()
                 .map(BannerMapper::toResponse)
                 .toList();
