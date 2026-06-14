@@ -32,12 +32,13 @@ public class SecurityConfig {
                                                                 "/api/users/register",
                                                                 "/api/users/check-phone",
                                                                 "/api/users/update-pin",
-                                                                "/api/products/**",
-                                                                "/api/users/**",
-                                                                "/api/addresses/**",
-                                                                "/api/orders/**",
-                                                                "/api/categories/**",
                                                                 "/api/home/**",
+                                                                "/api/categories/**",
+                                                                "/api/products/**",
+                                                                "/api/subcategories/**",
+                                                                "/api/users/**",
+                                                                "/api/orders/**",
+                                                                "/api/addresses/**",
                                                                 "/api/cart/**",
                                                                 "/ws/**")
                                                 .permitAll()

@@ -1,6 +1,7 @@
 package com.grocio.backend.controller;
 
 import com.grocio.backend.dto.ProductDetailsDTO;
+import com.grocio.backend.dto.ProductMapper;
 import com.grocio.backend.dto.ProductResponse;
 import com.grocio.backend.entity.Product;
 import com.grocio.backend.repository.ProductRepository;
@@ -27,10 +28,8 @@ public class ProductController {
     @GetMapping("/{subCategoryId}/products")
     public List<Product> getProducts(
             @PathVariable Long subCategoryId) {
-
         return productRepository
                 .findBySubCategory_IdAndIsActiveTrue(subCategoryId);
-
     }
 
     @GetMapping("/{id}")
@@ -67,6 +66,24 @@ public class ProductController {
                 }).toList();
 
         Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("products", products);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<Map<String, Object>> getProductsByCategory(
+            @PathVariable Long categoryId) {
+
+        List<ProductResponse> products = productRepository
+                .findByCategoryId(categoryId)
+                .stream()
+                .map(ProductMapper::toResponse)
+                .toList();
+
+        Map<String, Object> response = new HashMap<>();
+
         response.put("success", true);
         response.put("products", products);
 
