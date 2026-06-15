@@ -84,7 +84,7 @@ public class AddressController {
         }
     }
 
-    // 🟢 4. పాత అడ్రస్‌ని ఎడిట్ (Update) చేసే API
+    // 🟢 4. పాత అడ్రస్‌ని ఎడిట్ (Update) చేసే API (మ్యాప్-ఫస్ట్ ఆర్కిటెక్చర్ అప్‌డేట్స్)
     @PutMapping("/update/{addressId}")
     public ResponseEntity<Map<String, Object>> updateAddress(@PathVariable Long addressId, @RequestBody Address updatedAddress) {
         Map<String, Object> response = new HashMap<>();
@@ -94,9 +94,18 @@ public class AddressController {
                 existingAddress.setTitle(updatedAddress.getTitle());
                 existingAddress.setReceiverName(updatedAddress.getReceiverName());
                 existingAddress.setReceiverPhone(updatedAddress.getReceiverPhone());
-                existingAddress.setFullAddress(updatedAddress.getFullAddress());
+                
+                // 🟢 కొత్త ఫీల్డ్స్ సింక్
+                existingAddress.setFlatNo(updatedAddress.getFlatNo());
+                existingAddress.setFormattedAddress(updatedAddress.getFormattedAddress());
+                existingAddress.setCity(updatedAddress.getCity());
+                existingAddress.setState(updatedAddress.getState());
+                existingAddress.setPlaceId(updatedAddress.getPlaceId());
+                existingAddress.setLatitude(updatedAddress.getLatitude());
+                existingAddress.setLongitude(updatedAddress.getLongitude());
+                
                 existingAddress.setLandmark(updatedAddress.getLandmark());
-                existingAddress.setPincode(updatedAddress.getPincode()); // పింకోడ్ కూడా సింక్ చేశాం
+                existingAddress.setPincode(updatedAddress.getPincode()); 
                 
                 addressRepository.save(existingAddress);
                 
@@ -114,7 +123,7 @@ public class AddressController {
         }
     }
 
-    // 🟢 5. అడ్రస్‌ను డెలిట్ (Delete) చేసే కొత్త API (ఇది ఇందాక మిస్ అయింది)
+    // 🟢 5. అడ్రస్‌ను డెలిట్ చేసే API
     @DeleteMapping("/delete/{addressId}")
     public ResponseEntity<Map<String, Object>> deleteAddress(@PathVariable Long addressId) {
         Map<String, Object> response = new HashMap<>();
