@@ -22,57 +22,57 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HomeServiceImpl implements HomeService {
 
-    private final BannerRepository bannerRepository;
+        private final BannerRepository bannerRepository;
 
-    private final CategoryRepository categoryRepository;
+        private final CategoryRepository categoryRepository;
 
-    private final HomeSectionRepository homeSectionRepository;
+        private final HomeSectionRepository homeSectionRepository;
 
-    @Override
-    public HomeResponse getHome() {
+        @Override
+        public HomeResponse getHome() {
 
-        List<HomeSectionResponse> sections =
+                List<HomeSectionResponse> sections =
 
-                homeSectionRepository
-                        .findByIsActiveTrueOrderByDisplayOrderAsc()
-                        .stream()
-                        .map(this::mapSection)
-                        .collect(Collectors.toList());
+                                homeSectionRepository
+                                                .findByIsActiveTrueOrderByDisplayOrderAsc()
+                                                .stream()
+                                                .map(this::mapSection)
+                                                .collect(Collectors.toList());
 
-        return HomeResponse.builder()
-                .success(true)
-                .banners(
-                        bannerRepository.findActiveBanners()
-                                .stream()
-                                .map(BannerMapper::toResponse)
-                                .collect(Collectors.toList()))
-                .categories(
-                        categoryRepository.findAllByOrderByIdAsc()
-                                .stream()
-                                .map(CategoryMapper::toResponse)
-                                .collect(Collectors.toList()))
-                .sections(sections)
-                .build();
+                return HomeResponse.builder()
+                                .success(true)
+                                .banners(
+                                                bannerRepository.findActiveBanners()
+                                                                .stream()
+                                                                .map(BannerMapper::toResponse)
+                                                                .collect(Collectors.toList()))
+                                .categories(
+                                                categoryRepository.findAllByOrderByIdAsc()
+                                                                .stream()
+                                                                .map(CategoryMapper::toResponse)
+                                                                .collect(Collectors.toList()))
+                                .sections(sections)
+                                .build();
 
-    }
+        }
 
-    private HomeSectionResponse mapSection(HomeSection section) {
+        private HomeSectionResponse mapSection(HomeSection section) {
 
-        return HomeSectionResponse.builder()
-                .sectionId(section.getSectionId())
-                .code(section.getCode())
-                .title(section.getTitle())
-                .subtitle(section.getSubtitle())
-                .layoutType(section.getLayoutType())
-                .products(
-                        section.getProducts()
-                                .stream()
-                                .filter(HomeSectionProduct::getIsActive)
-                                .map(HomeSectionProduct::getProduct)
-                                .map(ProductMapper::toResponse)
-                                .collect(Collectors.toList()))
-                .build();
+                return HomeSectionResponse.builder()
+                                .sectionId(section.getSectionId())
+                                .code(section.getCode())
+                                .title(section.getTitle())
+                                .subtitle(section.getSubtitle())
+                                .layoutType(section.getLayoutType())
+                                .products(
+                                                section.getProducts()
+                                                                .stream()
+                                                                .filter(HomeSectionProduct::getIsActive)
+                                                                .map(HomeSectionProduct::getProduct)
+                                                                .map(ProductMapper::toResponse)
+                                                                .collect(Collectors.toList()))
+                                .build();
 
-    }
+        }
 
 }
