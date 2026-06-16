@@ -77,4 +77,14 @@ public class CouponController {
         response.put("message", "Cart coupon cleared successfully");
         return ResponseEntity.ok(response);
     }
+
+    // 🟢 ఫ్లట్టర్ నుండి కూపన్ పక్కాగా సేవ్ అవ్వడానికి ప్రత్యేక API
+    @PostMapping("/cart/save")
+    public ResponseEntity<Map<String, Object>> saveCartCoupon(@RequestBody CartCoupon request) {
+        Map<String, Object> response = new HashMap<>();
+        cartCouponRepository.save(request);
+        response.put("success", true);
+        response.put("message", "Coupon saved to cart database successfully!");
+        return ResponseEntity.ok(response);
+    }
 }
