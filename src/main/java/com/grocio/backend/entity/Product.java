@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @Entity
@@ -56,6 +57,7 @@ public class Product {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<HomeSectionProduct> homeSections = new ArrayList<>();
 }
