@@ -25,7 +25,7 @@ public class SecurityConfig {
                                 .cors(cors -> {
                                 }) // CORS అలో చేస్తుంది
                                 .authorizeHttpRequests(auth -> auth
-                                                // ఈ API లకి టోకెన్ అవసరం లేదు (పబ్లిక్)
+                                                // 🟢 కేవలం పబ్లిక్ గా ఉండాల్సిన వాటికే ఇక్కడ పర్మిషన్ ఇస్తున్నాం
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers(
                                                                 "/api/users/login",
@@ -36,18 +36,14 @@ public class SecurityConfig {
                                                                 "/api/categories/**",
                                                                 "/api/products/**",
                                                                 "/api/subcategories/**",
-                                                                "/api/users/**",
-                                                                "/api/orders/**",
-                                                                "/api/addresses/**",
-                                                                "/api/cart/**",
                                                                 "/api/banners/**",
-                                                                "/api/coupons/**",
                                                                 "/ws/**")
                                                 .permitAll()
-                                                // మిగతా ఏ API (Update Profile, Add to Cart etc.) వాడాలన్నా కచ్చితంగా
-                                                // లాగిన్
-                                                // (టోకెన్) అయి ఉండాలి
+                                                
+                                                // 🔒 మ్యాజిక్ ఇక్కడే ఉంది: పైన లిస్ట్ లో లేనివి (Orders, Cart, Addresses, Wallet, Coupons, Users Profile) 
+                                                // అన్నీ ఆటోమేటిక్ గా లాగిన్ (JWT Token) ఉంటేనే లోపలికి వస్తాయి!
                                                 .anyRequest().authenticated())
+                                                
                                 // సెషన్స్ వద్దు, ఎందుకంటే మనం JWT వాడుతున్నాం కాబట్టి
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

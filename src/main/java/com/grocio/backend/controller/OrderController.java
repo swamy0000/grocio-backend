@@ -2,7 +2,9 @@ package com.grocio.backend.controller;
 
 import com.grocio.backend.dto.OrderRequestDTO;
 import com.grocio.backend.entity.Order;
+import com.grocio.backend.entity.PaymentMode;
 import com.grocio.backend.repository.OrderRepository;
+import com.grocio.backend.repository.PaymentModeRepository;
 import com.grocio.backend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,16 @@ public class OrderController {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private PaymentModeRepository paymentModeRepository; // 🟢 డైనమిక్ UI కోసం కొత్తగా యాడ్ చేశాం
+
+    // 🟢 0. (క్రొత్తది) ఫ్లట్టర్ పేమెంట్ స్క్రీన్ UI డైనమిక్ గా బిల్డ్ చేయడానికి
+    @GetMapping("/payment-modes")
+    public ResponseEntity<List<PaymentMode>> getActivePaymentModes() {
+        // enabled = true ఉన్న ఆప్షన్స్ మాత్రమే ఫ్లట్టర్ కి వెళ్తాయి
+        return ResponseEntity.ok(paymentModeRepository.findByEnabledTrueOrderByDisplayOrderAsc());
+    }
 
     @PostMapping("/place")
     public ResponseEntity<Map<String, Object>> placeOrder(@RequestBody OrderRequestDTO orderRequest) {
@@ -102,7 +114,7 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 🟢 5. [మిస్సింగ్ ఎండ్ పాయింట్ ఫిక్స్] ఒక కస్టమర్ యొక్క పాత ఆర్డర్ హిస్టరీ మొత్తం పొందడానికి (GET /api/orders/user/1)
+    // 🟢 5. ఒక కస్టమర్ యొక్క పాత ఆర్డర్ హిస్టరీ మొత్తం పొందడానికి (GET /api/orders/user/1)
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Order>> getOrdersByUserId(@PathVariable Long userId) {
         List<Order> userOrders = orderRepository.findByUserIdOrderByOrderTimeDesc(userId);

@@ -18,13 +18,27 @@ public class Order {
     @Column(name = "user_id", nullable = false)
     private Long userId;
     
-    // 🟢 మీ ఇమేజ్ లో ఉన్నట్లుగా కరెక్ట్ కాలమ్ నేమ్ మ్యాప్ చేశాను
     @Column(name = "delivery_address_id", nullable = false)
     private Long deliveryAddressId;
     
     @Column(name = "delivery_partner_id")
     private Long deliveryPartnerId; 
+
+    // 🟢 కొత్తగా యాడ్ చేసాం: వస్తువుల అసలు ధర (డెలివరీ, డిస్కౌంట్స్ కలపక ముందు)
+    @Column(name = "item_total", nullable = false)
+    private Double itemTotal;
+
+    @Column(name = "delivery_fee")
+    private Double deliveryFee;
     
+    @Column(name = "handling_charge")
+    private Double handlingCharge;
+
+    // 🟢 కొత్తగా యాడ్ చేసాం: కూపన్ అప్లై చేస్తే తగ్గిన అమౌంట్ ట్రాక్ చేయడానికి
+    @Column(name = "coupon_discount")
+    private Double couponDiscount = 0.0;
+    
+    // అన్ని లెక్కలు (itemTotal + delivery + handling - discount) వేశాక కస్టమర్ కట్టాల్సిన ఫైనల్ అమౌంట్
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
     
@@ -37,18 +51,11 @@ public class Order {
     @Column(nullable = false)
     private String status; 
     
-    // 🟢 మీ ఇమేజ్ లో ఉన్నట్లుగా 'order_time' కాలమ్ మ్యాప్ చేశాను
     @Column(name = "order_time", updatable = false)
     private LocalDateTime orderTime = LocalDateTime.now();
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
-    
-    @Column(name = "delivery_fee")
-    private Double deliveryFee;
-    
-    @Column(name = "handling_charge")
-    private Double handlingCharge;
     
     @Column(name = "delivery_otp", nullable = false, length = 4)
     private String deliveryOtp;
@@ -61,6 +68,4 @@ public class Order {
     
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
-    
-    
 }
