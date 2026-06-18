@@ -8,6 +8,7 @@ import com.grocio.backend.repository.PaymentModeRepository;
 import com.grocio.backend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate; // 🟢 ఇక్కడ కొత్త ఇంపోర్ట్ యాడ్ చేసాం
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -26,12 +27,14 @@ public class OrderController {
     private OrderRepository orderRepository;
 
     @Autowired
-    private PaymentModeRepository paymentModeRepository; // 🟢 డైనమిక్ UI కోసం కొత్తగా యాడ్ చేశాం
+    private PaymentModeRepository paymentModeRepository;
 
-    // 🟢 0. (క్రొత్తది) ఫ్లట్టర్ పేమెంట్ స్క్రీన్ UI డైనమిక్ గా బిల్డ్ చేయడానికి
+    // 🟢 0. THE WEBSOCKET MESSENGER: ఫ్లట్టర్ కి లైవ్ సిగ్నల్స్ పంపే టూల్
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate; 
+
     @GetMapping("/payment-modes")
     public ResponseEntity<List<PaymentMode>> getActivePaymentModes() {
-        // enabled = true ఉన్న ఆప్షన్స్ మాత్రమే ఫ్లట్టర్ కి వెళ్తాయి
         return ResponseEntity.ok(paymentModeRepository.findByEnabledTrueOrderByDisplayOrderAsc());
     }
 
@@ -55,13 +58,12 @@ public class OrderController {
         }
     }
 
-    // 🟢 1. స్టోర్ మేనేజర్ కోసం: కొత్తగా వచ్చిన ఆర్డర్లను చూడటానికి
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Order>> getOrdersByStatus(@PathVariable String status) {
         return ResponseEntity.ok(orderService.getOrdersByStatus(status));
     }
 
-    // 🟢 2. స్టేటస్ అప్‌డేట్ చేయడానికి: స్టోర్ & డెలివరీ ఏజెంట్ ఇద్దరూ దీన్నే వాడతారు
+    // 🟢 2. స్టేటస్ అప్‌డేట్ & వెబ్‌సాకెట్ బ్రాడ్‌కాస్ట్
     @PutMapping("/{orderId}/update-status")
     public ResponseEntity<Map<String, Object>> updateStatus(
             @PathVariable Long orderId,
@@ -71,7 +73,16 @@ public class OrderController {
 
         Map<String, Object> response = new HashMap<>();
         try {
+            // డేటాబేస్ లో ఆర్డర్ అప్‌డేట్ అవుతుంది
             Order order = orderService.updateOrderStatus(orderId, status, partnerId, remarks);
+            
+            // ⚡ WEBSOCKET MAGIC ⚡
+            // 1. My Orders లిస్ట్ రిఫ్రెష్ అవ్వడానికి (User Topic)
+            messagingTemplate.convertAndSend("/topic/user/" + order.getUserId() + "/orders", order.getStatus());
+            
+            // 2. లైవ్ ట్రాకింగ్ మ్యాప్ రిఫ్రెష్ అవ్వడానికి (Order Topic)
+            messagingTemplate.convertAndSend("/topic/order/" + orderId, order.getStatus());
+
             response.put("success", true);
             response.put("message", "Order status updated to " + status);
             response.put("currentStatus", order.getStatus());
@@ -83,7 +94,6 @@ public class OrderController {
         }
     }
 
-    // 🟢 3. డెలివరీ ఓటీపీ వెరిఫికేషన్ ఎండ్ పాయింట్
     @PostMapping("/{orderId}/verify-delivery")
     public ResponseEntity<Map<String, Object>> verifyDeliveryOtp(
             @PathVariable Long orderId,
@@ -92,6 +102,12 @@ public class OrderController {
         Map<String, Object> response = new HashMap<>();
         try {
             orderService.verifyOtpAndDeliver(orderId, otp);
+            
+            // OTP వెరిఫై అయితే ఆర్డర్ DELIVERED కి వెళ్తుంది కాబట్టి, ఆ సిగ్నల్ కూడా పంపుతున్నాం
+            Order order = orderRepository.findById(orderId).orElseThrow();
+            messagingTemplate.convertAndSend("/topic/user/" + order.getUserId() + "/orders", "DELIVERED");
+            messagingTemplate.convertAndSend("/topic/order/" + orderId, "DELIVERED");
+
             response.put("success", true);
             response.put("message", "Order delivered successfully! Payment released.");
             return ResponseEntity.ok(response);
@@ -106,7 +122,6 @@ public class OrderController {
         }
     }
 
-    // 🟢 4. ఒక నిర్దిష్ట ఆర్డర్ యొక్క పూర్తి వివరాలు పొందడానికి
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
         return orderRepository.findById(orderId)
@@ -114,7 +129,6 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 🟢 5. ఒక కస్టమర్ యొక్క పాత ఆర్డర్ హిస్టరీ మొత్తం పొందడానికి (GET /api/orders/user/1)
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Order>> getOrdersByUserId(@PathVariable Long userId) {
         List<Order> userOrders = orderRepository.findByUserIdOrderByOrderTimeDesc(userId);
