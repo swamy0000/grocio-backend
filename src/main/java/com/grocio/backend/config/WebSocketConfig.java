@@ -9,20 +9,17 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
+    
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // 🟢 /topic తో స్టార్ట్ అయ్యే ఛానల్స్ కి సర్వర్ మెసేజ్ పుష్ చేస్తుంది
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
     }
-
+    
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 🟢 ఫ్లట్టర్ క్లయింట్ కనెక్ట్ అవ్వడానికి ఎండ్ పాయింట్ URL:
-        // ws://localhost:8089/ws
+        // 🟢 బగ్ ఫిక్స్: ఇక్కడ కేవలం allowedOriginPatterns మాత్రమే ఉంచాం
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("*")
-                .setAllowedOriginPatterns("*");
+        .setAllowedOriginPatterns("*");
     }
 }
