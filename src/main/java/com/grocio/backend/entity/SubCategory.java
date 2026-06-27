@@ -1,5 +1,7 @@
 package com.grocio.backend.entity;
 
+import com.grocio.backend.product.entity.Product;
+import com.grocio.backend.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.Data;
 

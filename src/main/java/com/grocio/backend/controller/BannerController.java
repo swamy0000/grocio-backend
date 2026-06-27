@@ -3,9 +3,9 @@ package com.grocio.backend.controller;
 import com.grocio.backend.dto.BannerResponse;
 import com.grocio.backend.mapper.BannerMapper;
 import com.grocio.backend.repository.BannerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,10 +15,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/banners")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class BannerController {
 
-    @Autowired
-    private BannerRepository bannerRepository;
+    private final BannerRepository bannerRepository;
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getBanners() {

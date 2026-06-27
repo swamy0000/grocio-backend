@@ -1,6 +1,5 @@
 package com.grocio.backend.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,8 +14,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-        @Autowired
-        private JwtAuthFilter jwtAuthFilter;
+        private final JwtAuthFilter jwtAuthFilter;
+
+        public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+                this.jwtAuthFilter = jwtAuthFilter;
+        }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -28,10 +30,7 @@ public class SecurityConfig {
                                                 // 🟢 కేవలం పబ్లిక్ గా ఉండాల్సిన వాటికే ఇక్కడ పర్మిషన్ ఇస్తున్నాం
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers(
-                                                                "/api/users/login",
-                                                                "/api/users/register",
-                                                                "/api/users/check-phone",
-                                                                "/api/users/update-pin",
+                                                                "/api/auth/**",
                                                                 "/api/home/**",
                                                                 "/api/categories/**",
                                                                 "/api/products/**",
@@ -39,11 +38,11 @@ public class SecurityConfig {
                                                                 "/api/banners/**",
                                                                 "/ws/**")
                                                 .permitAll()
-                                                
-                                                // 🔒 మ్యాజిక్ ఇక్కడే ఉంది: పైన లిస్ట్ లో లేనివి (Orders, Cart, Addresses, Wallet, Coupons, Users Profile) 
-                                                // అన్నీ ఆటోమేటిక్ గా లాగిన్ (JWT Token) ఉంటేనే లోపలికి వస్తాయి!
+
+                                                // 🔒 పైన లిస్ట్లో లేనివి అన్నీ ఆటోమేటిక్ గా లాగిన్ (JWT Token) ఉంటేనే
+                                                // లోపలికి వస్తాయి!
                                                 .anyRequest().authenticated())
-                                                
+
                                 // సెషన్స్ వద్దు, ఎందుకంటే మనం JWT వాడుతున్నాం కాబట్టి
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
